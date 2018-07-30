@@ -1,0 +1,27 @@
+{
+  "name": "shixi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^3.0.0",
+    "bootstrap": "^3.3.7",
+    "connect-multiparty": "^2.1.1",
+    "jquery": "^3.3.1",
+    "koa": "^2.5.2",
+    "koa-body": "^4.0.4",
+    "koa-bodyparser": "^4.2.1",
+    "koa-route": "^3.2.0",
+    "koa-session": "^5.8.2",
+    "koa-static": "^5.0.0",
+    "mongodb": "^3.1.1",
+    "mongoose": "^5.2.4",
+    "redis": "^2.8.0",
+    "session": "^0.1.0"
+  }
+}

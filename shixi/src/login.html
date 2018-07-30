@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title>智能餐饮连锁管理系统</title>
+	<style>
+	* {
+		padding: 0;
+		margin: 0;
+	}
+		html, body, .bgc {
+			height: 100%;
+		}
+		.bgc {
+			overflow: hidden;
+			background: url(images/login_bgc.jpg) center center;
+		}
+		.content {
+			position: absolute;
+			width: 300px;
+			overflow: hidden;
+			background-color: #ECD9CA;
+			border: 6px solid #BEBFC1;
+			left: 100px;
+			top: 180px;
+		}
+		.txt {
+			width: 50px;
+		}
+		.input {
+			float: right;
+		}
+		.input-wrapper {
+			margin: 20px;
+			width: 240px;
+		}
+		.status-wrapper {
+			margin: 20px;
+			width: 240px;
+		  padding-left: 24px;
+		}
+		.status-wrapper .radio {
+			margin-left: 20px;
+		}
+		.submit {
+			width: 200px;
+			height: 40px;
+			background-color: #bdbdbd;
+			border: 4px solid #fcf1df;
+			margin-left: 28px;
+			cursor: pointer;
+		}
+		.submit:hover {
+			background-color: #cead84;
+		}
+		label {
+			cursor: pointer;
+			margin-left: 5px;
+		}
+		.head {
+			position: absolute;
+			left: 100px;
+			top: 50px;
+		}
+		.prompt {
+			color: red;
+    	text-align: center;
+		}
+	</style>
+	<script type="text/javascript" src="script/login.js" defer></script>
+</head>
+<body>
+	<h1 class="head">智能餐饮连锁管理系统</h1>
+	<div class="bgc">
+		<div class="content">
+			<form method="post" action="login">	
+				<div class="input-wrapper">
+					<span class="txt">用户名：</span><input id="userId" class="input" type="text" name="username" />
+				</div>
+				<div class="input-wrapper">
+					<span class="txt">密码：</span><input id="password" class="input" type="password" name="password" />
+				</div>
+				<div class="status-wrapper">
+					<input class="radio" id="management" type="radio" name="status" value="management" checked /><label for="management">管理员</label>
+					<input class="radio" id="staff" type="radio" name="status" value="staff" /><label for="staff">普通员工</label>
+				</div>
+				<div class="prompt" id="prompt"></div>
+				<div class="input-wrapper">
+					<input class="submit" type="submit" value="登录" id="submit" accesskey="true">
+				</div>
+			</form>
+		</div>
+	</div>
+
+</body>
+</html>

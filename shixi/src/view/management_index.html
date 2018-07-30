@@ -1,0 +1,773 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<link rel="stylesheet" href="../lib/bootstrap.css" />
+	<script src="../lib/jquery.min.js" defer></script>
+	<script src="../lib/bootstrap.min.js" defer></script>
+  <script defer>
+  	window.onload = function() {
+
+  		/* 菜单管理模块 */
+
+  		// 分页链接处理
+  		var count,
+  				currentIndex = 1,
+  				flag = true;
+  		// 菜单分页逻辑
+  		function bindDevideEvents() {
+  			$('.dishes-page-index').click(function(event) {
+	  			currentIndex = parseInt($(this).text());
+	  			dishesDevidePage($(this));
+	  			getMenuMessage(currentIndex);
+	  		});
+	  		$('.pre-dishes-page').click(function() {
+	  			if(currentIndex === 0) {
+	  				return;
+	  			}
+	  			currentIndex -= 1;
+	  			dishesDevidePage($($('.dishes-page-index')[currentIndex%6-1]));
+	  			getMenuMessage(currentIndex);
+	  		});
+	  		$('.next-dishes-page').click(function() {
+	  			if(currentIndex === count+1) {
+	  				return;
+	  			}
+	  			currentIndex += 1;
+	  			dishesDevidePage($($('.dishes-page-index')[currentIndex%6-1]));
+	  			getMenuMessage(currentIndex);
+	  		});
+  		}
+  		// 分页自动生成逻辑
+  		function generateDivide() {
+  			var html = '';
+  			html += '<li class="pre-dishes-page"><span href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></span></li>';
+  			var len = count > 5 ? 5 : count;
+  			//console.log(count);
+  			for(var i=1; i<=len; i++) {
+  				html += '<li class="dishes-page-index dishes-page-part"><a href="#">'+i+'</a></li>';
+  			}
+  			html += '<li class="next-dishes-page"><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>';
+  			$('#menu_divide_page').html(html);
+  			$('#menu_divide_page li')[1].className += ' active'
+  		}
+  		function dishesDevidePage(el) {
+  			if(currentIndex-2 > 0 && currentIndex+2 <= count) {
+  				var j = currentIndex-2;
+  				for(var i=0, len = $('.dishes-page-index').length; i<len; i++,j++) {
+  					$('.dishes-page-index')[i].innerHTML = '<a href="#">' + j + '</a>';
+  				}
+  				$($('.dishes-page-index')[2]).siblings().removeClass('active').end().addClass('active');
+  			}else {
+  				el.siblings().removeClass('active').end().addClass('active');
+  			}
+  		}
+
+  		$('.dishes-item').bind('mouseover', function(event) {
+  			$(this).siblings().children('.dish-mask').css('display', 'none');
+  			$(this).children('.dish-mask').css('display', 'flex');
+  		});
+  		$('.dishes-item').bind('mouseout', function(event) {
+  			$('.dish-mask').css('display', 'none');
+  		});
+  		var add_dishes_price = $('#add_dishes_price');
+  		$('#add_dishes').click(function(event) {
+  			if(!/^\d+(.\d+)*$/g.test(add_dishes_price[0].value)) {
+  				alert('价格必须填写数字')
+  				return;
+  			}
+  				var formData = new FormData($('#add_dishes_form')[0]);
+  				var url = id ? "/add_dishes?id="+id : '/add_dishes';
+            $.ajax({
+                type: 'post',
+                url: url,
+                data: formData,
+                cache: false,
+                processData: false,
+                contentType: false,
+                success: function (data, status) {
+                	if(status == 'success') {
+	                	var formData = new FormData($("#add_dishes_form")[0]);
+                		$("#add_dishes_form")[0].reset();
+  									$('.add-dishes-mask').css('display', 'none');
+  									var items = $('#' + id + ' td');
+	  								items[0].innerHTML = formData.get('menu_name');
+	  								items[1].innerHTML = formData.get('menu_price');
+	  								items[2].innerHTML = formData.get('menu_desc');
+	  								items[3].innerHTML =data.status ? '下架' : '在售';
+	  								$('#' + id + ' th img')[0].src = $('#' + id + ' th img')[0].src + '?' + Math.random();
+                	}
+  								id = '';
+            		},
+            		error: function(err) {
+            			alert('保存出错');
+            			console.log(err);
+            		}
+            });
+  		});
+  		$('.close-add').click(function() {
+  			$('.add-dishes-mask').css('display', 'none');
+  		});
+  		$('#add_dishes_btn').click(function() {
+  			$("#add_dishes_form")[0].reset();
+  			$('.add-dishes-mask').css('display', 'flex');
+  			$.get('/type', function(data) {
+  				if(data) {
+  					var html = '';
+  					for(var i=0,len=data.length; i<len; i++) {
+  						html += '<span class="dishes-type"><input type="checkbox" id="'+data[i]._id+'" value="'+data[i].type+'" name="types"/> <label for="'+data[i]._id+'">'+data[i].type+'</label></span>';
+  					}
+  					$('.add-dishes-content .checkbox').html(html);
+  				}
+  			});
+  		});
+  		function getMenuMessage(index) {
+  			$.get('/menu?pageIndex='+index+'&count=3', function(data, status) {
+  				console.log(data);
+  				var html = ''
+  				if(status == 'success') {
+  					if(flag) {
+  						count = data.pageIndex;
+  						console.log(count)
+  						generateDivide();
+  						bindDevideEvents();
+  						flag = false;
+  					}
+  					data=data.data;
+  				}
+  				if(data) {
+  					for (var i = 0, len = data.length; i < len; i++) {
+  						html += '<tr class="menu-row" id="'+data[i].id+'"><th scope="row"><div class="dishes-item"><img src="../'+data[i].img+'" class="dishes-img"/><div class="dish-mask">'+data[i].name+'</div></div></th><td>'+data[i].name+'</td><td>'+data[i].price+'</td><td>'+data[i].desc+'</td><td>'+(data[i].exist?'在售':'下架')+'</td><td class="btn-menu-update-wrapper"><button class="btn btn-small btn btn-default" id="menu_id_'+data[i].id+'">修改</button><button class="btn btn-small btn btn-default soldout" id="sold_out_'+data[i].id+'">'+(data[i].exist?'下架':'在售')+'</button></td></tr>';
+  						$('#menu_page tbody').html(html);
+  					}
+  				}
+  			});
+  		}
+  		getMenuMessage(1);
+  		var id = '';
+
+  		$('tbody').click(function(event) {
+  			// 判断点击的按钮
+  			id = event.target.id;
+  			if(id.indexOf('menu_id_') >= 0) {
+  				id = id.substring(8);
+  				if(id) {
+	  				$('#add_dishes_btn').trigger('click');
+
+	  				$.get('/menu?id='+id, function(data, status) {
+	  					console.log(data);
+	  					if(status == 'success' && data) {
+	  						data = data.data;
+	  						var form = $('#add_dishes_form')[0];
+
+	  						form.menu_name.value = data.name;
+								form.menu_price.value = data.price;
+								form.menu_desc.value = data.desc;
+								form.menu_id.value = data.id;
+
+								$('input:checkbox').each(function () {
+									var value = this.value,
+										that = this;
+									data.type.forEach(function(item) {
+										if(value == item) {
+											that.checked = true;
+										}
+									});
+								});
+	  					}
+	  				});
+	  			}
+  			}else if(id.indexOf('sold_') >= 0){
+  				id = id.substring(9);
+  				// 根据id 将后台数据下架
+  				var tag = $('#' + id + ' td')[3],
+  					status = true;
+  				if(tag.innerHTML == '下架') {
+  					tag.innerHTML = '在售';
+  					status = true;
+  					$('#' + id + ' button')[1].innerHTML = '下架';
+  				}else {
+  					tag.innerHTML = '下架';
+  					status = false;
+  					$('#'+ id +' button')[1].innerHTML = '在售';
+  				}
+  				var url = '/add_dishes?id='+id + '&status=' + status;
+  				$.get(url, function(data, status) {
+  					if(status == 'success') {
+  						alert('操作成功');
+  					}
+  				});
+  			}
+  		});
+
+
+
+
+
+  		// 总页数 每页3个
+  		$('.page-part').click(function() {
+  			$(this).addClass('active').siblings().removeClass('active');
+  			var pageIndex = $(this).text();
+  			// 根据页数发送ajax请求
+  			// 根据页数处理
+  			// 设置页数 中间来看
+  			getTableMessage(pageIndex);
+  		});
+  		function getTableMessage(pageIndex) {
+  			// 
+  			var url = '/table?num=' + pageIndex;
+  			$.get(url, function(data, status) {
+  				alert(data + status);
+  			});
+  			renderTable($('.my-table-wrapper'));
+  		}
+  		function renderTable(el, json) {
+  			
+  		}
+
+
+
+  		// 每个餐桌添加click事件
+
+  		// 设置缓存  只有点击分页部分才会去请求数据
+
+
+  		/* 餐桌管理 */
+  		$('user_manage').click(function() {
+
+  		});
+
+  		$('type_manage').click(function() {
+
+  		});
+
+  		$('statistic_manage').click(function() {
+
+  		});
+
+  		$('more_function').click(function() {
+
+  		});
+
+  		$('exitBtn').click(function() {
+
+  		});
+
+  		$('updatePwd').click(function() {
+
+  		});
+
+  		/*修改密码模块*/
+  		$('#change_pwd').click(function() {
+  			var formData = new FormData($('#alert_pwd_form')[0]);
+  			if(formData.get('new-pwd') == formData.get('new-pwd-2') && formData.get('new-pwd').length >1) {
+	  			var url = '/change_pwd';
+	  			$.ajax({
+	  				type: 'post',
+	          url: url,
+	          data: formData,
+	          cache: false,
+	          processData: false,
+	          contentType: false,
+	          success: function(data, status) {
+	          	console.log('data');
+	          	console.log(data);
+	          	if(data == 0) {
+	          		alert('修改成功');
+	          	}else if(data == 1){
+	          		alert('密码错误');
+	          	}else {
+	          		alert('修改失败');
+	          	}
+	          },
+	          error: function(err) {
+	          	alert('修改失败');
+	          }
+	  		});
+			}else {
+  			alert('请检查新密码');
+			}
+		});
+  		// 失去焦点的校验
+  		$('#inputPassword3').bind('blur', function(event) {
+  			if(this.value != $('#inputPassword3')[0].value) {
+  				alert('两次密码不一致');
+  			}
+  		});
+  	}
+  </script>
+	<style>
+		html, body {
+			width: 100%;
+			font-family: '微软雅黑';
+			overflow: scroll;
+		}
+		body {
+			background: url(../images/bgc1.jpg) top center;
+			overflow: hidden;
+		}
+		.content {
+			width: 73.4%;
+			margin: 0 auto;
+		}
+		.my-tab-content {
+			background: rgba(255, 255, 255, .5);
+			margin-top: 0px;
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+		}	
+		.my-tab-content-wrapper {
+			width: 100%;
+			overflow: hidden;
+		}
+		.my-table-wrapper {
+			position: relative;
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: space-around;
+			align-items: center;
+		}
+		.table-item-wrapper {
+			position: relative;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			cursor: pointer;
+			width: 140px;
+			height: 140px;
+			margin: 10px;
+			float: left;
+			background-color: rgba(0,0,0,.1);
+		}
+		.table-item-wrapper:hover:after{
+			content: '预定';
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			background-color: rgba(255, 255, 255, .5);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			font-size: 24px;
+		}
+		.table-item {
+			width: 76%;
+			height: 76%;
+			border-radius: 50%;
+			background-color: #a1c5e9;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		.table-text {
+			font-size: 16px;
+		}
+		.my-nav {
+			position: relative;
+      left: 50%;
+      transform: translateX(-50%);
+      cursor: pointer;
+		}
+
+		.dishes-item {
+			position: relative;
+	    cursor: pointer;
+	    width: 120px;
+	    height: 120px;
+	    margin: 10px;
+	    float: left;
+	    border: 2px solid #ccc;
+	    border-radius: 20px;
+	    overflow: hidden;
+		}
+		.dishes-img {
+			width: 100%;
+			height: 100%;
+		}
+		.dish-mask {
+			display: none;
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			background-color: rgb(255,255,255,.8);
+			justify-content: center;
+			align-items: center;
+		}
+		.my-dishes-btns {
+			position: relative;
+			left: 10px;
+			margin: 10px;
+		}
+		.add-dishes-mask {
+			position: fixed;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			background-color: rgba(0, 0, 0, 0.3);
+			display: none;
+			justify-content: center;
+			align-items: center;
+		}
+		.add-dishes-content {
+			width: 500px;
+			background-color: #fff;
+			padding: 20px;
+			margin: 20px auto;
+		}
+		.dishes-type {
+			margin-left: 24px;
+		}
+		.dishes-type label {
+			padding-left: 0;
+		}
+		.close-add {
+			position: absolute;
+	    right: 0;
+	    top: 0;
+	    cursor: pointer;
+		}
+		.add-dishes-wrapper {
+			position: relative;
+			right: -10px;
+    	top: -10px;
+    	padding-top: 16px;
+    	padding-right: 12px;
+		}
+		.menu-row td {
+			line-height: 120px !important;
+		}
+		.btn-menu-update-wrapper {
+			padding-top: 50px !important;
+		}
+		.soldout {
+			margin-left: 6px;
+		}
+		.alert-password {
+			padding: 50px 20px;
+		}
+		.alert-psw-input {
+			width: 370px;
+		}
+	</style>
+	<title>管理员首页</title>
+</head>
+<body>
+		<div class="bs-example bs-example-tabs content" data-example-id="togglable-tabs">
+    <ul id="myTabs" class="nav nav-tabs" role="tablist">
+      <li role="presentation" class="active">
+      	<a href="#menu_page" id="menu_manage" role="tab" data-toggle="tab" aria-controls="menu_page" aria-expanded="false">菜单管理</a>
+      </li>
+      <li role="presentation" class="">
+      	<a href="#table" role="tab" id="table_manage" data-toggle="tab" aria-controls="table" aria-expanded="true">餐桌管理</a>
+      </li>
+      <li role="presentation" class="">
+      	<a href="#staff" role="tab" id="user_manage" data-toggle="tab" aria-controls="staff" aria-expanded="true">人员管理</a>
+      </li>
+      <li role="presentation" class="">
+      	<a href="#type" role="tab" id="type_manage" data-toggle="tab" aria-controls="type" aria-expanded="true">类型管理</a>
+      </li>
+      <li role="presentation" class="">
+      	<a href="#statistic" role="tab" id="statistic_manage" data-toggle="tab" aria-controls="statistic" aria-expanded="true">统计查询</a>
+      </li>
+      <li role="presentation" class="">
+      	<a href="#profile" role="tab" id="more_function" data-toggle="tab" aria-controls="profile" aria-expanded="true">更多功能</a>
+      </li>
+      <li role="presentation" class="dropdown">
+        <a href="#" id="myTabDrop1" class="dropdown-toggle" data-toggle="dropdown" aria-controls="myTabDrop1-contents" aria-expanded="false">我的 
+        	<span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="myTabDrop1" id="myTabDrop1-contents">
+          <li>
+          	<a href="#dropdown1" role="tab" id="exitBtn" data-toggle="tab" aria-controls="dropdown1">退出登录</a>
+          </li>
+          <li>
+          	<a href="#dropdown2" role="tab" id="updatePwd" data-toggle="tab" aria-controls="dropdown2">修改密码</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <div id="myTabContent" class="tab-content my-tab-content-wrapper">
+      <div role="tabpanel" class="tab-pane fade my-tab-content active in" id="menu_page" aria-labelledby="home-tab">
+      	<div class="my-dishes-btns">
+      		<button id="add_dishes_btn" class="btn btn-default" type="submit">添加菜品</button>
+      	</div>
+      	<div class="my-table-wrapper">
+					<table class="table table-striped">
+			      <thead>
+			        <tr>
+			          <th></th>
+			          <th>菜名</th>
+			          <th>价格</th>
+			          <th>描述</th>
+			          <th>状态</th>
+			          <th>操作</th>
+			        </tr>
+			      </thead>
+			      <tbody>
+			      </tbody>
+			    </table>
+	      </div>
+
+					<nav aria-label="Page navigation">
+					  <ul class="pagination my-nav" id="menu_divide_page">
+					    
+					  </ul>
+					</nav>
+
+
+      </div>
+      <div role="tabpanel" class="tab-pane fade my-tab-content" id="table" aria-labelledby="home-tab">
+      	<div class="my-table-wrapper">
+
+	        <div class="table-item-wrapper">
+	        	<div class="table-item"><span class="table-text">1号</span></div>
+	        </div>
+
+	        <div class="table-item-wrapper">
+	        	<div class="table-item"><span class="table-text">2号</span></div>
+	        </div>
+	        <div class="table-item-wrapper">
+	        	<div class="table-item"><span class="table-text">3号</span></div>
+	        </div>
+	        <div class="table-item-wrapper">
+	        	<div class="table-item"><span class="table-text">4号</span></div>
+	        </div>
+	        <div class="table-item-wrapper">
+	        	<div class="table-item"><span class="table-text">5号</span></div>
+	        </div>
+	        <div class="table-item-wrapper">
+	        	<div class="table-item"><span class="table-text">6号</span></div>
+	        </div>
+	        <div class="table-item-wrapper">
+	        	<div class="table-item"><span class="table-text">7号</span></div>
+	        </div>
+					<div class="table-item-wrapper">
+	        	<div class="table-item"><span class="table-text">1号</span></div>
+	        </div>
+	        <div class="table-item-wrapper">
+	        	<div class="table-item"><span class="table-text">2号</span></div>
+	        </div>
+	        <div class="table-item-wrapper">
+	        	<div class="table-item"><span class="table-text">3号</span></div>
+	        </div>
+					<div class="table-item-wrapper">
+	        	<div class="table-item"><span class="table-text">3号</span></div>
+	        </div>
+	        <div class="table-item-wrapper">
+	        	<div class="table-item"><span class="table-text">7号</span></div>
+	        </div>
+					<div class="table-item-wrapper">
+	        	<div class="table-item"><span class="table-text">1号</span></div>
+	        </div>
+	        <div class="table-item-wrapper">
+	        	<div class="table-item"><span class="table-text">2号</span></div>
+	        </div>
+	        <div class="table-item-wrapper">
+	        	<div class="table-item"><span class="table-text">3号</span></div>
+	        </div>
+					<div class="table-item-wrapper">
+	        	<div class="table-item"><span class="table-text">3号</span></div>
+	        </div>
+				</div>
+
+					<nav aria-label="Page navigation" >
+					  <ul class="pagination my-nav">
+					    <li>
+					      <a href="#" aria-label="Previous">
+					        <span aria-hidden="true">&laquo;</span>
+					      </a>
+					    </li>
+					    <li class="page-part active"><a href="#">1</a></li>
+					    <li class="page-part"><a href="#">2</a></li>
+					    <li class="page-part"><a href="#">3</a></li>
+					    <li class="page-part"><a href="#">4</a></li>
+					    <li class="page-part"><a href="#">5</a></li>
+					    <li>
+					      <a href="#" aria-label="Next">
+					        <span aria-hidden="true">&raquo;</span>
+					      </a>
+					    </li>
+					  </ul>
+					</nav>
+
+      </div>
+			<div role="tabpanel" class="tab-pane fade my-tab-content" id="staff" aria-labelledby="home-tab">
+                <table class="table table-striped">
+		      <thead>
+		        <tr>
+		          <th>id</th>
+		          <th>用户名</th>
+		          <th>密码</th>
+		          <th>预定/点餐</th>
+		          <th>操作</th>
+		        </tr>
+		      </thead>
+		      <tbody>
+		        <tr>
+		          <th scope="row">001</th>
+		          <td>小曹</td>
+		          <td>000000</td>
+		          <td>
+		          	<button class="btn btn-small btn btn-default">查看详情</button>
+		          </td>
+		          <td>
+								<button class="btn btn-small btn btn-default">修改</button>
+								<button class="btn btn-small btn btn-default">删除</button>
+		          </td>
+		        </tr>
+		        <tr>
+		          <th scope="row">001</th>
+		          <td>小曹</td>
+		          <td>000000</td>
+		          <td>
+		          	<button class="btn btn-small btn btn-default">查看详情</button>
+		          </td>
+		          <td>
+								<button class="btn btn-small btn btn-default">修改</button>
+								<button class="btn btn-small btn btn-default">删除</button>
+		          </td>
+		        </tr>
+		        <tr>
+		          <th scope="row">001</th>
+		          <td>小曹</td>
+		          <td>000000</td>
+		          <td>
+		          	<button class="btn btn-small btn btn-default">查看详情</button>
+		          </td>
+		          <td>
+								<button class="btn btn-small btn btn-default">修改</button>
+								<button class="btn btn-small btn btn-default">删除</button>
+		          </td>
+		        </tr>
+		        <tr>
+		          <th scope="row">001</th>
+		          <td>小曹</td>
+		          <td>000000</td>
+		          <td>
+		          	<button class="btn btn-small btn btn-default">查看详情</button>
+		          </td>
+		          <td>
+								<button class="btn btn-small btn btn-default">修改</button>
+								<button class="btn btn-small btn btn-default">删除</button>
+		          </td>
+		        </tr>
+		      </tbody>
+		    </table>
+      </div>
+      <div role="tabpanel" class="tab-pane fade my-tab-content" id="type" aria-labelledby="home-tab">
+        <table class="table table-striped">
+		      <thead>
+		        <tr>
+		          <th>#</th>
+		          <th>类型名</th>
+		          <th>操作</th>
+		        </tr>
+		      </thead>
+		      <tbody>
+		        <tr>
+		          <th scope="row">1</th>
+		          <td>凉菜</td>
+		          <td>
+								<button class="btn btn-small btn btn-default">修改</button>
+								<button class="btn btn-small btn btn-default">删除</button>
+		          </td>
+		        </tr>
+		        <tr>
+		          <th scope="row">2</th>
+		          <td>热菜</td>
+		          <td>
+		          	<button class="btn btn-small btn btn-default">修改</button>
+								<button class="btn btn-small btn btn-default">删除</button>
+		          </td>
+		        </tr>
+		        <tr>
+		          <th scope="row">2</th>
+		          <td>甜品</td>
+		          <td>
+		          	<button class="btn btn-small btn btn-default">修改</button>
+								<button class="btn btn-small btn btn-default">删除</button>
+		          </td>
+		        </tr>
+		        <tr>
+		          <th scope="row">2</th>
+		          <td>主食</td>
+		          <td>
+		          	<button class="btn btn-small btn btn-default">修改</button>
+								<button class="btn btn-small btn btn-default">删除</button>
+		          </td>
+		        </tr>
+		      </tbody>
+		    </table>
+      </div>
+			<div role="tabpanel" class="tab-pane fade my-tab-content" id="statistic" aria-labelledby="home-tab">
+        <h1>统计查询</h1>
+      </div>
+      <div role="tabpanel" class="tab-pane fade my-tab-content" id="profile" aria-labelledby="profile-tab">
+        <h1>更多功能</h1>
+      </div>
+      <div role="tabpanel" class="tab-pane fade my-tab-content" id="dropdown2" aria-labelledby="updatePwd">
+        <form class="form-horizontal alert-password" id="alert_pwd_form">
+				  <div class="form-group">
+				    <label for="inputPassword1" class="col-sm-2 control-label">密码:</label>
+				    <div class="col-sm-10">
+				      <input type="password" class="form-control alert-psw-input" id="inputPassword1" placeholder="密码" name="old-pwd">
+				    </div>
+				  </div>
+				  <div class="form-group">
+				    <label for="inputPassword2" class="col-sm-2 control-label">新密码:</label>
+				    <div class="col-sm-10">
+				      <input type="password" class="form-control alert-psw-input" id="inputPassword2" placeholder="新密码" name="new-pwd">
+				    </div>
+				  </div>
+				  <div class="form-group">
+				    <label for="inputPassword3" class="col-sm-2 control-label">确认输入:</label>
+				    <div class="col-sm-10">
+				      <input type="password" class="form-control alert-psw-input" id="inputPassword3" placeholder="确认输入" name="new-pwd-2">
+				    </div>
+				  </div>
+				  <div class="form-group">
+				    <div class="col-sm-offset-2 col-sm-10">
+				      <input type="button" class="btn btn-default" id="change_pwd" value="确认修改"></input>
+				    </div>
+				  </div>
+				</form>
+      </div>
+    </div>
+  </div>
+	<div class="add-dishes-mask">
+		<div class="add-dishes-content">
+			<!-- 添加表单 -->
+			<form class="add-dishes-wrapper" id="add_dishes_form" method="post" entype="multipart/form-data">
+				<div class="close-add"><span class="glyphicon glyphicon-remove"></span></div>
+			  <div class="form-group">
+			    <label for="exampleInputEmail1">菜名：</label>
+			    <input type="text" class="form-control" id="add_dishes_name" placeholder="菜名" name="menu_name">
+			  </div>
+			  <div class="form-group">
+			    <label for="exampleInputPassword1">价格：</label>
+			    <input type="text" class="form-control" id="add_dishes_price" placeholder="价格" name="menu_price">
+			  </div>
+			  <div class="form-group">
+			    <label for="exampleInputPassword1">菜品描述：</label>
+			    <input type="text" class="form-control" id="add_dishes_desc" placeholder="菜品描述" name="menu_desc">
+			  </div>
+			  <div class="form-group">
+			    <label for="exampleInputFile">上传图片</label>
+			    <input type="file" id="add_dishes_img" name="menu_img"  />
+			  </div>
+			  <input type="hidden" name="menu_id" />
+			  <div class="checkbox">
+			  </div>
+			  <input class="btn btn-default" id="add_dishes" value="保存"></input>
+			  <input class="btn btn-default" id="add_dishes_reset" type="reset" value="重置"></input>
+			</form>
+		</div>
+	</div>
+</body>
+</html>

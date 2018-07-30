@@ -1,0 +1,579 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title>顶级工作项的筛选器</title>
+	<style>
+		@font-face {
+		  font-family: 'icomoon';
+		  src:  url('icon-font/fonts/icomoon.eot?68syn');
+		  src:  url('icon-font/fonts/icomoon.eot?68syn#iefix') format('embedded-opentype'),
+		    url('icon-font/fonts/icomoon.ttf?68syn') format('truetype'),
+		    url('icon-font/fonts/icomoon.woff?68syn') format('woff'),
+		    url('icon-font/fonts/icomoon.svg?68syn#icomoon') format('svg');
+		  font-weight: normal;
+		  font-style: normal;
+		}
+		[class^="icon-"], [class*=" icon-"] {
+		  /* use !important to prevent issues with browser extensions that change fonts */
+		  font-family: 'icomoon' !important;
+		  speak: none;
+		  font-style: normal;
+		  font-weight: normal;
+		  font-variant: normal;
+		  text-transform: none;
+		  line-height: 1;
+
+		  /* Better Font Rendering =========== */
+		  -webkit-font-smoothing: antialiased;
+		  -moz-osx-font-smoothing: grayscale;
+		}
+		.icon-rect:before {
+		  content: "\e903";
+		}
+		.icon-check:before {
+		  content: "\e904";
+		  color: #707070;
+		}
+		.icon-delete:before {
+		  content: "\e900";
+		  color: #a1260d;
+		}
+		.icon-add:before {
+		  content: "\e901";
+		}
+		.icon-arrow-down:before {
+		  content: "\e902";
+		}
+		span {
+			display: inline-block;
+		}
+		input {
+			display: inline-block;
+			vertical-align: middle;
+			margin-left: 2px;
+			font-size: 16px;
+			padding-left: 4px;
+		}
+		html {
+			overflow-y: scroll;
+		}
+		body {
+			padding: 0;
+			height: 100%;
+			width: 1310px;
+			margin: 0 auto;
+			background-color: #FCFCFC;
+		}
+		.content {
+			margin-top: 50px;
+			padding: 20px;
+		}
+		.content .header {
+			line-height: 40px;
+			margin-left: 50px;
+		}
+		.title {
+			margin-bottom: 6px;
+		}
+		.title .title-1 {
+			margin-left: 114px;
+		}
+		.title .title-2 {
+			margin-left: 192px;
+		}
+		.title .title-3 {
+			margin-left: 186px;
+		}
+		.title .title-4 {
+			margin-left: 242px;
+		}
+		.title .title-5 {
+			margin-left: 154px;
+		}
+		.item {
+			position: relative;
+			height: 30px;
+			margin-left: 50px;
+			font-size: 0px;
+			line-height: 30px;
+		}
+		i {
+			font-size: 20px;
+			display: inline-block;
+			vertical-align: middle;
+			cursor: pointer;
+		}
+		.item .rect {
+			margin-left: 20px;
+		}
+		.item .check {
+			position: absolute;
+			font-size: 26px;
+			left: 58px;
+			top: 2px;
+			display: none;
+		}
+		.item .delete {
+			margin-left: 5px;
+			font-size: 16px;
+		}
+		.item .field {
+			width: 266px;
+		}
+		.item .operator {
+			width: 196px;
+		}
+		.item .value {
+			width: 206px;
+		}
+		.item-yu {
+			padding-left: 4px;
+			display: inline-block;
+			width: 416px;
+			line-height: 30px;
+			vertical-align: middle;
+		}
+		.item-yu .left {
+			position: relative;
+			width: 298px;
+			height: 10px;
+			vertical-align: middle;
+			margin-right: 1px;
+		}
+		.item-yu .left .and-or-div {
+			position: absolute;
+			right: 0;
+			bottom: -10px;
+			overflow: hidden;
+			background-color: #FCFCFC;
+			border: 1px solid #CCCCCC;
+			border-right: 0;
+		}
+		.item-yu .left .and-or-div .icon {
+			position: absolute;
+			left: 1px;
+			top: 4px;
+		}
+		.item-yu .and-or {
+			cursor: pointer;
+			display: inline-block;
+			line-height: 18px;
+			font-size: 16px;
+			width: 108px;
+			padding: 1px;
+			vertical-align: middle;
+		}
+		.item .arrow-down {
+			  position: absolute;
+		    width: 21px;
+		    height: 19px;
+		    background-color: #FCFCFC;
+		}
+		.item .arrow-down-first {
+			left: 752px;
+		  top: 4px;
+		}
+		.item .arrow-down-second {
+			left: 958px;
+		  top: 4px;
+		}
+		.add-row {
+			margin-left: 50px;
+		}
+		.add-row span {
+			color: #2470E3;
+			font-size: 16px;
+			cursor: pointer;
+			vertical-align: middle;
+		}
+		.field-menu {
+			position: absolute;
+			left: 593px;
+			top: 158px;
+			width: 270px;
+			height: 176px;
+			overflow-y: scroll;
+			border: 1px solid #ccc;
+			display: none;
+			z-index: 100;
+			background-color: #FCFCFC;
+		}
+		.operator-menu {
+			position: absolute;
+			left: 870px;
+			top: 163px;
+			width: 200px;
+			height: 88px;
+			overflow-y: scroll;
+			border: 1px solid #ccc;
+			display: none;
+			z-index: 100;
+			background-color: #FCFCFC;
+		}
+		ul {
+			padding: 0;
+			margin: 0;
+			font-size: 16px;
+		}
+		ul li {
+			list-style: none;
+			line-height: 20px;
+			padding-left: 4px;
+			cursor: pointer;
+			border: 1px solid rgba(0,0,0,0);
+		}
+		ul li:hover {
+			background-color: #DCE6F4;
+			border: 1px solid #C5D6F1;
+		}
+	</style>
+</head>
+<body>
+	<div class="content">
+		<span class="header">顶级工作项的筛选器</span>
+		<div class="main" id="main">
+			<div class="title">
+				<img src="icon-font/icon.gif" class="title-1" />
+				<span class="title-2" >与/或</span>
+				<span class="title-3" >字段</span>
+				<span class="title-4" >运算符</span>
+				<span class="title-5" >值</span>
+			</div>
+		</div>
+		<div class="field-menu" id="select2">
+				<ul>
+					<li>ID</li>
+					<li>备注</li>
+					<li>本地数据源</li>
+					<li>标题</li>
+					<li>步骤</li>
+					<li>参数</li>
+					<li>超链接计数</li>
+					<li>出现版本</li>
+					<li>出现版本</li>
+					<li>出现版本</li>
+					<li>出现版本</li>
+					<li>出现版本</li>
+					<li>出现版本</li>
+					<li>出现版本</li>
+				</ul>
+		</div>
+		<div class="operator-menu" id="select3">
+				<ul>
+					<li>=</li>
+					<li>+</li>
+					<li>-</li>
+					<li>*</li>
+					<li>*</li>
+					<li>*</li>
+					<li>*</li>
+					<li>*</li>
+					<li>*</li>
+				</ul>
+		</div>
+		<span class="add-row" id="add">
+				<i class="icon-add add"></i>
+				<span class="add-new-row">添加新子句</span>
+		</span>
+	</div>
+</body>
+</html>
+<script>
+	var items = [
+	/*	{
+			id: 'item0',
+			checked: false,				 // 选框
+			andOr: 'and',				   // 与/或
+			field: '',             // 字段
+			operator: '',					 // 运算符
+			value: ''							 // 值
+		}*/
+	];
+	// 写结果
+	function setValue(itemId, value) {
+		var id = itemId.substring(4);
+		$('value' + id).value = value;
+	}
+	// 获取选择布尔值
+	function getChecked(itemId) {
+		var id = itemId.substring(4);
+		var checked = getItem(id).checked;
+		return checked;
+	}
+	// 获取与或
+	function getAndOr(itemId) {
+		var id = itemId.substring(4);
+		return $('andOrSelect' + id).value;
+	}
+	// 获取字段
+	function getField(itemId) {
+		var id = itemId.substring(4);
+		return $('field' + id).value;
+	}
+	// 获取运算符
+	function getOperator(itemId) {
+		var id = itemId.substring(4);
+		return $('operator' + id).value;
+	}
+	// 读取值
+	function getValue(itemId) {
+		var id = itemId.substring(4);
+		return $('value' + id).value;
+	}
+</script>
+<script>
+	EventUtil = {
+			getEvent: function(event){
+				return event ? event : window.event;
+			},
+			addHandler: function(element, type, handler){
+				if (element.addEventListener) {
+					element.addEventListener(type, handler, false);  
+				}else if(element.attachEvent){
+					element.attachEvent("on" + type, handler);
+				}else{
+					element["on" + type] = handler;
+				}
+			},
+			removeHandler: function(element, type, handler){
+				if (element.removeEventListener) {
+					element.removeEventListener(type, handler, false);
+				}else if (element.detachEvent) {
+					element.detachEvent("on" + type, handler);
+				}else{
+					element["on" + type] = null;
+				}
+			},
+			getTarget: function(event){
+				return event.target || event.srcElement;
+			}
+	}
+	function $(id) {
+		return document.getElementById(id);
+	}
+</script>
+<script>
+	var color = ['#F0FFFF', '#FFE1FF', '#FFFACD'];
+	var main = $('main'),
+		  add = $('add'),
+		  select2 = $('select2'),
+		  select3 = $('select3'),
+		  select3Show = false,
+		  select2Show = false;
+	EventUtil.addHandler(add, 'click', function() {
+		var id = getId();
+		var newDiv = createNewItem(id);
+		main.appendChild(newDiv);
+		bindData(id);
+		addEvent(id);
+	});
+	function createNewItem(id) {
+		var newDiv = document.createElement('div');
+		newDiv.className = 'item';
+		newDiv.id = 'item' + id;
+		newDiv.innerHTML = '<i class="icon-add add" id="insert'+id+'"></i><i class="icon-delete delete" id="delete'+id+'"></i><span id="check'+id+'"><i class="icon-rect rect" id="rect'+id+'"></i><i class="icon-check check" id="checked'+id+'"></i></span><div class="item-yu" id="left'+id+'"><span class="left"><div class="and-or-div" id="andOr'+id+'"><img src="icon-font\/icon2.gif" class="icon" /></div></span><select id="andOrSelect'+id+'" class="and-or"><option value="and">与</option><option value="or">或</option></select></div><input type="text" class="field" id="field'+id+'" /><i id="select2'+id+'" class="icon-arrow-down arrow-down arrow-down-first"></i><input type="text" value="=" class="operator" id="operator'+id+'" /><i id="select3'+id+'" class="icon-arrow-down arrow-down arrow-down-second"></i><input type="text" class="value" id="value'+id+'" />';
+		return newDiv;
+	}
+	function bindData(id, newId) {
+		var item = {
+				id: 'item' + id,
+				checked: false,
+				andOr: 'and',
+				field: '',
+				operator: '=',
+				value: ''
+			};
+		if(newId) {
+			item.id = 'item' + newId;
+			items.splice(getIndex(id), 0, item);
+		}else {
+			items.push(item);
+		}
+	}
+	function addEvent(id) {
+		EventUtil.addHandler($('andOrSelect' + id), 'change', function() {
+			getItem(id).andOr = this.value;
+		});
+		EventUtil.addHandler($('field' + id), 'blur', function() {
+			getItem(id).field = this.value;
+		});
+		EventUtil.addHandler($('operator' + id), 'blur', function() {
+			getItem(id).operator = this.value;
+		});
+		EventUtil.addHandler($('value' + id), 'change', function() {
+			getItem(id).value = this.value;
+		});
+		renderAndOr();
+		for(var i=0; i<items.length; i++) {
+			var itemId = items[i].id;
+			var idNum = itemId.slice(-4);
+			EventUtil.removeHandler($(itemId), 'click', eventAgency);
+			EventUtil.addHandler($(itemId), 'click', eventAgency);
+		}
+	}
+	function eventAgency(event) {
+		event = EventUtil.getEvent(event);
+		var target = EventUtil.getTarget(event);
+		var id = target.id.slice(-4);
+		// insert
+		if(target.id == 'insert'+ id){
+			var newId = getId();
+			var newDiv = createNewItem(newId);
+			main.insertBefore(newDiv, $('item' + id));
+
+			bindData(id,newId);
+			addEvent(newId);
+
+			renderAndOr();
+		}
+		// delete
+		if(target.id == 'delete'+ id){
+			
+			EventUtil.removeHandler($('item'+ id), 'click', eventAgency);
+			main.removeChild($('item'+ id));
+			removeItem('item'+id);
+			renderAndOr();
+		}
+		// check
+		if((target.id == 'rect'+ id) || (target.id == 'checked'+ id)){
+			if(getItem(id).checked) {
+				$('checked' + id).style.display = 'none';
+			}else {
+				$('checked' + id).style.display = 'block';
+			}
+			getItem(id).checked = !getItem(id).checked;
+			renderAndOr();
+		}
+		// 字段
+		if(target.id == 'select2'+ id){
+			toggleSelect2($('item' + id).offsetTop + 24);
+		}
+		// 运算符
+		if(target.id == 'select3'+ id){
+			toggleSelect3($('item' + id).offsetTop + 24);
+		}
+
+	}
+
+	select2.onclick = function(event) {
+		event = EventUtil.getEvent(event);
+		var target = EventUtil.getTarget(event),
+				top = select2.style.top,
+				res = top.substr(0,top.length-2) - 24,
+				id = getItemByTop(res);
+
+		$('field'+id).focus();
+		$('field'+id).value = target.innerText;
+		$('field'+id).blur();
+		toggleSelect2();
+	}
+
+	select3.onclick = function(event) {
+		event = EventUtil.getEvent(event);
+		var target = EventUtil.getTarget(event),
+				top = select3.style.top,
+				res = top.substr(0,top.length-2) - 24,
+				id = getItemByTop(res);
+
+		$('operator'+id).focus();
+		$('operator'+id).value = target.innerText;
+		$('field'+id).blur();
+
+		toggleSelect3();
+	}
+	function toggleSelect2(top) {
+		if(select2Show) {
+			select2.style.display = 'none';
+		}else {
+			select2.style.top = top + 'px';
+			select2.style.display = 'block';
+		}
+		select2Show = !select2Show;
+	}
+	function toggleSelect3(top) {
+		if(select3Show) {
+			select3.style.display = 'none';
+		}else {
+			select3.style.top = top + 'px';
+			select3.style.display = 'block';
+		}
+		select3Show = !select3Show;
+	}
+	function renderAndOr() {
+		if(items.length > 1) {
+			var w = Math.floor(298 / (items.length-1));
+		}else {
+			var andOr = $('andOr' + items[0].id.slice(-4));
+			andOr.style.width = '0px';
+			andOr.style.height = '0px';
+			andOr.style.backgroundColor = color[i%3];
+		}
+			for(var i=0; i<items.length; i++) {
+				var andOrId = items[i].id.slice(-4);
+				var andOr = $('andOr' + andOrId);
+				if(items.length > 1 && i>0) {
+					andOr.style.width = (w * i)+'px';
+					andOr.style.height = (30 * (i+1)) +'px';
+					if(items[i].checked) {
+						andOr.style.backgroundColor = color[i%3];
+						andOr.getElementsByTagName('img')[0].style.display = 'block';
+					}else {
+						andOr.style.backgroundColor = '#FCFCFC';
+						andOr.getElementsByTagName('img')[0].style.display = 'none';
+					}
+					andOr.style.zIndex = items.length-i;
+				}else {
+					andOr.style.display = 'none';
+				}
+			}
+	}
+	function getItemByTop(top) {
+		this.items = window.items;
+		for(var i=0; i < window.items.length; i++) {
+			var item = $(items[i].id),
+					id = item.id.slice(-4);
+			if(item.offsetTop == top) {
+				return id;
+			}
+		};
+	}
+
+	function removeItem(id) {
+		for(var i=0; i<items.length; i++) {
+			if(items[i].id == id) {
+				items.splice(i, 1);
+				break;	
+			}
+		}
+	}
+	function getItem(id) {
+		for(var i=0; i<items.length; i++) {
+			if(items[i].id == 'item'+id) {
+				return items[i];
+			}
+		}
+	}
+	function getIndex(id) {
+		for(var i=0; i<items.length; i++) {
+			var strId = items[i].id.slice(-4);
+			if(strId == id) {
+				return i;
+			}
+		}
+	}
+	function getId() {
+		var flag = true;
+		var id = Math.floor(Math.random()*(9999-1000) + 1000);
+		for(var i=0; i<items.length; i++) {
+			if(('item' + id) == items[i].id) {
+				flag = false;
+			}
+		}
+		if(flag) {
+			return id;
+		}else {
+			return getId();
+		}
+	}
+</script>

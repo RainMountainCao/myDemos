@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>box</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		.div1 {
+			float: left;
+			width: 1399px;
+			height: 540px;
+			background-color: red;
+			font-size: 60px;
+			color: #fff;
+		}
+		.div2 {
+			float: left;
+			width: 500px;
+			height: 500px;
+			background-color: yellow;
+			font-size: 60px;
+			color: #fff;
+		}
+
+	</style>
+</head>
+<body>
+	<div class="div1"></div>
+	<div class="div2"></div>
+	<script>
+		var div = document.querySelector('.div1');
+		console.log(div);
+		var div2 = document.querySelector('.div2');
+		var cur = div.getBoundingClientRect();
+		div.innerHTML = 'right: ' + cur.right + '</br>left: '+  cur.left + '</br>top: ' + cur.top + '</br>bottom: ' + cur.bottom + '</br>width: ' + cur.width + '</br>height: ' + cur.height;
+	</script>
+</body>
+</html>

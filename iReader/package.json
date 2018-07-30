@@ -1,0 +1,26 @@
+{
+  "name": "ireader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "webpack": "^4.5.0"
+  },
+  "dependencies": {
+    "co-views": "^2.1.0",
+    "ejs": "^2.6.1",
+    "is-generator-function": "^1.0.7",
+    "koa": "^2.5.1",
+    "koa-route": "^3.2.0",
+    "koa-router": "^7.4.0",
+    "koa-static": "^4.0.2",
+    "less": "^3.0.4",
+    "zepto": "^1.2.0"
+  }
+}

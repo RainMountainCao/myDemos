@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>read</title>
+	<link rel="stylesheet" href="static/css/reset.css">
+	<link rel="stylesheet/less" href="static/css/font.css">
+
+	<link rel="stylesheet/less" href="static/css/read.less">
+	<script src="static/script/adapter.js"></script>
+	<script src="node_modules/less/dist/less.js"></script>
+</head>
+<body>
+	<!-- 上导航栏 -->
+	<div class="top hide">
+		<span class="back"><i class="icon-back"></i></span>
+		<span class="right"><i class="icon-points"></i></span>
+		<span class="right"><i class="icon-eyephone"></i></span>
+	</div>
+
+	<!-- 目录 -->
+	<div class="chapters-mask hide">
+		<div class="chapters">
+			<div class="book-name">大秦帝国进阶手册</div>
+			<div class="tab-index">
+				<span>书签</span>
+				<span>想法/划线</span>
+				<span>目录</span>
+				<span class="underline"></span>
+			</div>
+			<div class="tab-content-wrapper">
+				<ul class="tab-content">
+					<li class="label-content tab-content-item">
+						<div class="no-label">
+							<i class="icon-bookmark"></i>
+							<span>本书暂时没有书签信息</span>
+						</div>
+					</li>
+					<li class="note-content tab-content-item">
+						<div class="no-note">
+							<i class="icon-note"></i>
+							<span>暂无想法，阅读时长按文字添加想法</span>
+						</div>
+					</li>
+					<li class="chapter-content tab-content-item"></li>
+				</ul>
+			</div>
+		</div>		
+	</div>
+	
+	<!-- 文章部分 -->
+	<div class="read-content-wrapper">
+		<div id="read_content">
+			
+		</div>
+	</div>
+	<!-- 标注 -->
+	<div class="pen hide">
+		<i class="icon-pen"></i>
+	</div>
+
+	<!-- 底部setting -->
+	<div class="bottom hide">
+		<div class="progress">
+			<span id="pre-chapter" class="text">上一章</span>
+			<!-- 进度条组件 -->
+			<div class="progress-bar-wrapper">
+				<div class="progress-bar">
+					<span class="bar"></span>
+					<span class="index"></span>
+				</div>
+			</div>
+			<span id="next-chapter" class="text">下一章</span>
+		</div>
+		<ul class="setting-wrapper">
+			<li class="setting-item chap"><i class="icon-chap"></i><span class="text">目录</span></li>
+			<li class="setting-item light"><i class="icon-light"></i><span class="text">亮度</span></li>
+			<li class="setting-item moon"><i class="icon-moon"></i><span class="text">夜间</span></li>
+			<li class="setting-item sett"><i class="icon-seeting"></i><span class="text">设置</span></li>
+		</ul>
+	</div>
+
+	<!-- 亮度 -->
+	<div class="light-setting hide"></div>
+
+	<!-- 设置 -->
+	<div class="setting-page-wrapper hide">
+		<ul class="setting">
+			<li class="setting1">
+				<div class="font-setting">
+					<span class="font-smaller-setting font-size">
+						<i class="icon-smaller"></i>
+					</span>
+					<span class="font-size-text">63</span>
+					<span class="font-bigger-setting font-size">
+						<i class="icon-bigger"></i>
+					</span>
+					<span class="font-style-setting">繁</span>
+					<span class="font-family-setting">字体</span>
+				</div>
+				<div class="text-space-setting">
+					<span class="text-space1 space-style"><i class="icon-p4"></i></span>
+					<span class="text-space2 space-style"><i class="icon-p4"></i></span>
+					<span class="text-space3 space-style"><i class="icon-p4"></i></span>
+					<span class="text-space4 space-style"><i class="icon-p4"></i></span>
+					<span class="text-space5 space-style"><i class="icon-p4"></i></span>
+					<span class="text-space-more"><i class="icon-add"></i></span>
+				</div>
+				<div class="bgc-setting">
+					<span class="bgc-color1 bgc-style"></span>
+					<span class="bgc-color2 bgc-style"></span>
+					<span class="bgc-color3 bgc-style"></span>
+					<span class="bgc-color4 bgc-style"></span>
+					<span class="bgc-color5 bgc-style"></span>
+					<span class="bgc-more"><i class="icon-add"></i></span>
+				</div>
+			</li>
+			<li class="setting2">
+				<div class="pagechange-style-setting">
+					<span class="pagechange-real page-style">仿真</span>
+					<span class="pagechange-cover page-style">覆盖</span>
+					<span class="pagechange-swipe page-style">滑动</span>
+					<span class="pagechange-none page-style">无</span>
+				</div>
+				<div class="pagechange-more-setting">
+					<div class="pagechange-fullscreen">
+						<i class="icon-page"></i><p>全屏翻页</p>
+					</div>
+					<div class="pagechange-auto">
+						<i class="icon-page"></i><p>自动翻页</p>
+					</div>
+					<div class="pagechange-orient">
+						<i class="icon-toggle-screen"></i><p>横屏</p>
+					</div>
+				</div>
+				<div class="more-setting">更多设置>></div>
+			</li>
+		</ul>
+		<ol class="setting-indexCircle">
+		</ol>
+	</div>
+	<script src="node_modules/zepto/src/zepto.js"></script>
+	<script src="node_modules/zepto/src/ajax.js"></script>
+	<script src="node_modules/zepto/src/event.js"></script>
+	<script src="node_modules/zepto/src/touch.js"></script>
+	<script src="static/script/test.js"></script>
+	<script src="static/script/read.js"></script>
+</body>
+</html>
